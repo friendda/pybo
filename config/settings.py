@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from django.contrib import messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,11 +29,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+#get/post 한번에 보낼수 있는개수 셋팅(default 3000)
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 30000
 
 # Application definition
 
 INSTALLED_APPS = [
     'common.apps.CommonConfig',
+    'jumun.apps.JumunConfig',
     'pybo.apps.PyboConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -131,3 +136,17 @@ LOGIN_REDIRECT_URL = '/'
 # 로그아웃시 이동하는 URL
 LOGOUT_REDIRECT_URL = '/'
 
+#파일
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'files')
+MEDIA_URL='/files/'
+
+
+#메세지 태그
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
