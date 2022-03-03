@@ -101,7 +101,7 @@
 <!-- 페이징 안된 전체 조회 처리 -->
 <form id="downform" method="post" action="{% url 'jumun:jumun_excel2' %}">
 {% for jumun in jumun_list2 %}
-<input type="hidden" id="jumunlist" name="jumunlist[]" value="{{jumun.id}}">
+<input type="hidden" id="jumunlist" name="jumunlist[]" value="{{jumun.jumun_t_id}}">
 {% endfor %}
 {% csrf_token %}
 </form>
@@ -111,61 +111,61 @@
    
     {% for jumun in jumun_list %}
 	<tr > <form action="{% url 'jumun:jumun_excel' %}"  method="POST">
-			<td><input id="selected" type="checkbox" name="selected[]" value="{{jumun.id}}"> </td>
+			<td><input id="selected" type="checkbox" name="selected[]" value="{{jumun.jumun_t_id}}"> </td>
 
 			<td>{{ forloop.counter}} </td>
 			
 			<td>
-					{{ jumun.eng_flag}}
+					{{ jumun.영문}}
 			</td>
 			<td>
-					{{ jumun.jumun_date}}
+					{{ jumun.주문날짜}}
 			</td>
 			<td>
-					{{ jumun.jumun_id}}
+					{{ jumun.주문자id}}
 			</td>
 			<td>
-					{{ jumun.jumun_name}}
+					{{ jumun.주문자}}
 			</td>
 			<td>
-					{{ jumun.jumun_con}}
+					{{ jumun.위탁자}}
 			</td>
 			<td>
-                  {{ jumun.brand}}
+                  {{ jumun.브랜드}}
 		   </td>
 		   <td style="font-size: 11px">
-                   {{ jumun.prd_name}}
+                   {{ jumun.상품명}}
 		   </td>
 		   <td >
-                   {{ jumun.prd_color}}
+                   {{ jumun.색상}}
 		   </td>
 		   <td>
-                   {{ jumun.quantity}}
+                   {{ jumun.수량}}
 		   </td>
 		   <td>
-                   {{ jumun.wholesale}}
+                   {{ jumun.중도매}}
 		   </td>
 		   <td>
-                   {{ jumun.whole_pr}}
+                   {{ jumun.도매가}}
 		   </td>
-		   <td style="font-size: 11px">{{jumun.note}}</td>
+		   <td style="font-size: 11px">{{jumun.비고}}</td>
 		   <td>
-                   {{ jumun.sup_pr}}
-		   </td>
-		   <td>
-                   {{ jumun.name}}
+                   {{ jumun.공급가}}
 		   </td>
 		   <td>
-                   {{ jumun.phone}}
+                   {{ jumun.이름}}
+		   </td>
+		   <td>
+                   {{ jumun.전화번호}}
 		   </td>
 		   <td style="font-size: 10px">
-                   {{ jumun.address}}
+                   {{ jumun.주소}}
 		   </td>
 		   <td>
-                   {{ jumun.jumun_id2}}
+                   {{ jumun.아이디}}
 		   </td>
 		   <td>
-                   {{ jumun.date2}}
+                   {{ jumun.나온날짜}}
 		   </td>
    </tr>
 

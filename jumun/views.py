@@ -1,7 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import jumun_T
+##from .models import jumun_T
 ##from .models import Document
-from .forms import RegisterForm
+#mysql
+from .models import JumunT
+#모델 필드변경
+##from .forms import RegisterForm
 from django.utils import timezone
 import xlwt
 from django.http import HttpResponse
@@ -13,6 +16,9 @@ from django.views.decorators.csrf import csrf_exempt
 import simplejson as json
 from django.contrib import messages
 
+from django.contrib.auth.decorators import login_required
+
+##from django.contrib.auth.decorators import permission_required
 
 
 
@@ -23,7 +29,7 @@ from django.contrib import messages
 ##    return HttpResponse("jumun data")
 
 
-
+@login_required(login_url='common:login')
 def index(request):
     #페이지
     page = request.GET.get('page','1')
@@ -40,33 +46,37 @@ def index(request):
     mkc3 = request.GET.get('mkc3', '').strip()
     mkc4 = request.GET.get('mkc4', '').strip()
     mkc5 = request.GET.get('mkc5', '').strip()
-    
+
+    #계정정보저장
+    username= request.user.username
     
     
     #조회
-    
-    jumun_list = jumun_T.objects.order_by('id')
+    if username == 'admin':
+        jumun_list = JumunT.objects.order_by('jumun_t_id')
+    else: #계정정보=주문자id 인 내용만 조회
+        jumun_list =JumunT.objects.filter(Q(주문자id__icontains= username))
     
     all_c = jumun_list.count()
 
     if kw:
         jumun_list = jumun_list.filter(
-            Q(jumun_id__icontains=kw) | # 주문id
-            Q(jumun_name__icontains=kw) |  # 주문자명
-            Q(jumun_con__icontains=kw) |  # 위탁
-            Q(brand__icontains=kw)  # 브랜드
+            Q(주문자id__icontains=kw) | # 주문id
+            Q(주문자__icontains=kw) |  # 주문자명
+            Q(위탁자__icontains=kw) |  # 위탁
+            Q(브랜드__icontains=kw)  # 브랜드
         )
 
     elif mkw1 or mkw2 or mkw3 or mkw4 or mkw5:
         if mkc1 or mkc2 or mkc3 or mkc4 or mkc5:
             jumun_list = jumun_list.filter(
-                Q(jumun_name__in=[mkw1,mkw2,mkw3,mkw4,mkw5]),  # 주문자
-                Q(jumun_con__in=[mkc1,mkc2,mkc3,mkc4,mkc5])   # 위탁자
+                Q(주문자__in=[mkw1,mkw2,mkw3,mkw4,mkw5]),  # 주문자
+                Q(위탁자__in=[mkc1,mkc2,mkc3,mkc4,mkc5])   # 위탁자
             
             )
         else:
             jumun_list = jumun_list.filter(
-                Q(jumun_name__in=[mkw1,mkw2,mkw3,mkw4,mkw5]))
+                Q(주문자__in=[mkw1,mkw2,mkw3,mkw4,mkw5]))
                 
     kw_c = jumun_list.count()
     #jumun_list2 = 전체 조회내용
@@ -81,7 +91,7 @@ def index(request):
     
 
 
-
+#미사용 수정안했음
 
 def jumun_create(request):
 
@@ -98,13 +108,13 @@ def jumun_create(request):
     context = {'form' : form}
     return render(request, 'jumun/jumun_form.html', {'form': form})
 
-
+##@permission_required('jumun.delete_jumun_t', raise_exception = True)
 def jumun_delete(request):
-
+    
     id_list2 = request.POST.getlist('selected[]')
     page = request.GET.get('page')    
     for d_id in id_list2:
-        d = jumun_T.objects.get(id=d_id)
+        d = JumunT.objects.get(jumun_t_id=d_id)
         d.delete()
     
     return redirect('jumun:index')
@@ -133,7 +143,7 @@ def jumun_excel2(request):
     
     
     for d_id in id_list2:
-        rows = jumun_T.objects.filter(id=d_id).values_list('eng_flag', 'jumun_date','jumun_id','jumun_name','jumun_con','brand','prd_name','prd_color','quantity','wholesale','whole_pr','note','sup_pr','name','phone','address','jumun_id2','date2')
+        rows = JumunT.objects.filter(jumun_t_id=d_id).values_list('영문', '주문날짜','주문자id','주문자','위탁자','브랜드','상품명','색상','수량','중도매','도매가','비고','공급가','이름','전화번호','주소','아이디','나온날짜')
         
 
         for row in rows:
@@ -168,7 +178,7 @@ def jumun_excel(request):
     
     
     for d_id in id_list2:
-        rows = jumun_T.objects.filter(id=d_id).values_list('eng_flag', 'jumun_date','jumun_id','jumun_name','jumun_con','brand','prd_name','prd_color','quantity','wholesale','whole_pr','note','sup_pr','name','phone','address','jumun_id2','date2')
+        rows = JumunT.objects.filter(jumun_t_id=d_id).values_list('영문', '주문날짜','주문자id','주문자','위탁자','브랜드','상품명','색상','수량','중도매','도매가','비고','공급가','이름','전화번호','주소','아이디','나온날짜')
         
 
         for row in rows:
@@ -225,33 +235,33 @@ def excel_upload(request):
         for row in rows:
             
             dict = {}
-            dict['eng_flag']=row[0].value
-            dict['jumun_date']=row[1].value
-            dict['jumun_id']=row[2].value
-            dict['jumun_name']=row[3].value
-            dict['jumun_con']=row[4].value
-            dict['brand']=row[5].value
-            dict['prd_name']=row[6].value
-            dict['prd_color']=row[7].value
-            dict['quantity']=row[8].value
-            dict['wholesale']=row[9].value
-            dict['whole_pr']=row[10].value
-            dict['note']=row[11].value
-            dict['sup_pr']=row[12].value
-            dict['name']=row[13].value
-            dict['phone']=row[14].value
-            dict['address']=row[15].value
-            dict['jumun_id2']=row[16].value
-            dict['date2']=row[17].value
+            dict['영문']=row[0].value
+            dict['주문날짜']=row[1].value
+            dict['주문자id']=row[2].value
+            dict['주문자']=row[3].value
+            dict['위탁자']=row[4].value
+            dict['브랜드']=row[5].value
+            dict['상품명']=row[6].value
+            dict['색상']=row[7].value
+            dict['수량']=row[8].value
+            dict['중도매']=row[9].value
+            dict['도매가']=row[10].value
+            dict['비고']=row[11].value
+            dict['공급가']=row[12].value
+            dict['이름']=row[13].value
+            dict['전화번호']=row[14].value
+            dict['주소']=row[15].value
+            dict['아이디']=row[16].value
+            dict['나온날짜']=row[17].value
 
-            jumun_T(**dict).save()
+            JumunT(**dict).save()
 
         context = {'status': True, 'rtnmsg': '엑셀파일이 정상적으로 업로드 됐습니다.'}
         return HttpResponse(json.dumps(context), content_type='application/json')
 
 
 def all_delete(request):
-    jumun_list = jumun_T.objects.all()
+    jumun_list = JumunT.objects.all()
     jumun_list.delete()
     messages.info(request, '모든 데이터가 삭제되었습니다.')
     return redirect('jumun:index')
