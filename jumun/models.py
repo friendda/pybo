@@ -55,7 +55,33 @@ class JumunT(models.Model):
 
     class Meta:
         managed = False
+        verbose_name = '주문장'
         db_table = 'jumun_t'
 
 
 
+class OrderT(models.Model):
+    order_t_id = models.AutoField(primary_key=True)
+    영문 = models.CharField(max_length=12, blank=True, null=True)
+    주문날짜 = models.CharField(max_length=45, blank=True, null=True)
+    주문자id = models.CharField(db_column='주문자ID', max_length=45, blank=True, null=True)  # Field name made lowercase.
+    주문자 = models.CharField(max_length=45, blank=True, null=True)
+    위탁자 = models.CharField(max_length=45, blank=True, null=True)
+    브랜드 = models.CharField(max_length=45, blank=True, null=True)
+    상품명 = models.CharField(max_length=45, blank=True, null=True)
+    색상 = models.CharField(max_length=255, blank=True, null=True)
+    수량 = models.CharField(max_length=12, blank=True, null=True)
+    중도매 = models.CharField(max_length=25, blank=True, null=True)
+    도매가 = models.CharField(max_length=25, blank=True, null=True)
+    비고 = models.CharField(max_length=255, blank=True, null=True)
+    공급가 = models.CharField(max_length=25, blank=True, null=True)
+    이름 = models.CharField(max_length=45, blank=True, null=True)
+    전화번호 = models.CharField(max_length=45, blank=True, null=True)
+    주소 = models.CharField(max_length=255, blank=True, null=True)
+    아이디 = models.CharField(max_length=45, blank=True, null=True)
+    나온날짜 = models.CharField(max_length=45, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        verbose_name = '발송요청'
+        db_table = 'order_t'

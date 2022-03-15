@@ -1,6 +1,6 @@
 <!-- 네비게이션바 -->
-<nav class="navbar navbar-expand-lg navbar-light  border-bottom" style="background-color: #e3f2fd;">
-    <a class="navbar-brand" href="{% url 'pybo:index' %}"> Girin-주문장</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark  border-bottom" style="background-color: #e3f2fd;">
+    <a class="navbar-brand" href="{% url 'jumun:index' %}"> Girin-주문장</a>
     <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -20,12 +20,12 @@
 	<div class="collapse navbar-collapse" id="navbarNav">
             <ul class="nav navbar-nav ml-auto">
                 <li class="nav-item ">
-                    <a class="nav-link" href="/pybo"><i class="fa-solid fa-book-open-reader"></i> 게시판</a>
+                    <a class="nav-link" href="/pybo"><i class="fa-solid fa-clipboard-list"> </i> 게시판</a>
                 </li>
-				<!-- 최근이력 
+				
                 <li class="nav-item ">
-                    <a class="nav-link" href="/pybo/recent_list/"><i class="fas fa-history"></i> 최근이력</a>
-                </li> -->
+                    <a class="nav-link" href="/jumun/order"><i class="fa-solid fa-box-archive"></i> Order</a>
+                </li> 
                 
                 <li class="nav-item ">
                     <a class="nav-link" href="/common/login/"><i class="fas fa-sign-in-alt"></i> 로그인</a>
@@ -37,4 +37,6 @@
             </ul>
         </div>
 
+
 </nav>
+

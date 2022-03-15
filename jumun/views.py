@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 ##from .models import Document
 #mysql
 from .models import JumunT
+from .models import OrderT
 #모델 필드변경
 ##from .forms import RegisterForm
 from django.utils import timezone
@@ -260,10 +261,199 @@ def excel_upload(request):
         return HttpResponse(json.dumps(context), content_type='application/json')
 
 
+
+def order_submit(request):
+    id_list = request.POST.getlist('selected[]')
+    
+
+    for d_id in id_list:
+        rows = JumunT.objects.filter(jumun_t_id=d_id).values('영문', '주문날짜','주문자id','주문자','위탁자','브랜드','상품명','색상','수량','중도매','도매가','비고','공급가','이름','전화번호','주소','아이디','나온날짜')
+        
+        for row in rows:
+               
+            dict = {}
+            
+            dict['영문']=row['영문']
+            dict['주문날짜']=row['주문날짜']
+            dict['주문자id']=row['주문자id']
+            dict['주문자']=row['주문자']
+            dict['위탁자']=row['위탁자']
+            dict['브랜드']=row['브랜드']
+            dict['상품명']=row['상품명']
+            dict['색상']=row['색상']
+            dict['수량']=row['수량']
+            dict['중도매']=row['중도매']
+            dict['도매가']=row['도매가']
+            dict['비고']=row['비고']
+            dict['공급가']=row['공급가']
+            dict['이름']=row['이름']
+            dict['전화번호']=row['전화번호']
+            dict['주소']=row['주소']
+            dict['아이디']=row['아이디']
+            dict['나온날짜']=row['나온날짜']
+
+            OrderT(**dict).save()
+       #발주된 데이터 삭제
+        d = JumunT.objects.get(jumun_t_id=d_id)
+        d.delete()
+    
+    
+    return redirect('jumun:index')
+
+        
+
 def all_delete(request):
     jumun_list = JumunT.objects.all()
     jumun_list.delete()
     messages.info(request, '모든 데이터가 삭제되었습니다.')
     return redirect('jumun:index')
 
+def order_list(request):
+    #페이지
+    page = request.GET.get('page','1')
+
+    #검색어
+    kw = request.GET.get('kw', '').strip()
+    
+    mkw1 = request.GET.get('mkw1', '').strip()
+    mkw2 = request.GET.get('mkw2', '').strip()
+    mkw3 = request.GET.get('mkw3', '').strip()
+    mkw4 = request.GET.get('mkw4', '').strip()
+    mkw5 = request.GET.get('mkw5', '').strip()
+    mkc1 = request.GET.get('mkc1', '').strip()
+    mkc2 = request.GET.get('mkc2', '').strip()
+    mkc3 = request.GET.get('mkc3', '').strip()
+    mkc4 = request.GET.get('mkc4', '').strip()
+    mkc5 = request.GET.get('mkc5', '').strip()
+
+    #계정정보저장
+    username= request.user.username
+    
+    
+    #조회
+    if username == 'admin':
+        order_list = OrderT.objects.order_by('order_t_id')
+    else: #계정정보=주문자id 인 내용만 조회
+        order_list =OrderT.objects.filter(Q(주문자id__icontains= username))
+    
+    all_c = order_list.count()
+
+    if kw:
+        order_list = order_list.filter(
+            Q(주문자id__icontains=kw) | # 주문id
+            Q(주문자__icontains=kw) |  # 주문자명
+            Q(위탁자__icontains=kw) |  # 위탁
+            Q(브랜드__icontains=kw)  # 브랜드
+        )
+
+    elif mkw1 or mkw2 or mkw3 or mkw4 or mkw5:
+        if mkc1 or mkc2 or mkc3 or mkc4 or mkc5:
+            order_list = order_list.filter(
+                Q(주문자__in=[mkw1,mkw2,mkw3,mkw4,mkw5]),  # 주문자
+                Q(위탁자__in=[mkc1,mkc2,mkc3,mkc4,mkc5])   # 위탁자
+            
+            )
+        else:
+            order_list = order_list.filter(
+                Q(주문자__in=[mkw1,mkw2,mkw3,mkw4,mkw5]))
+                
+    kw_c = order_list.count()
+    #jumun_list2 = 전체 조회내용
+    #페이징
+    paginator = Paginator(order_list, 20) #페이지당 20개
+    page_obj = paginator.get_page(page)
+    context = {'order_list':page_obj, 'order_list2':order_list, 'page': page, 'kw': kw, 'all_c':all_c, 'kw_c':kw_c,'mkw1':mkw1,'mkw2':mkw2,'mkw3':mkw3,'mkw4':mkw4,'mkw5':mkw5,'mkc1':mkc1,'mkc2':mkc2,'mkc3':mkc3,'mkc4':mkc4,'mkc5':mkc5}
+
+    return render(request, 'jumun/order_list.html', context)
+
+def order_delete(request):
+    
+    id_list2 = request.POST.getlist('selected[]')
+    page = request.GET.get('page')    
+    for d_id in id_list2:
+        d = OrderT.objects.get(order_t_id=d_id)
+        d.delete()
+    
+    return redirect('jumun:order')
+
+
+
+##선택 다운로드
+def order_excel(request):
+	
+    response = HttpResponse(content_type="application/vnd.ms-excel")
+    response["Content-Disposition"] = 'attachment;filename*=UTF-8\'\'select_download.xls'
+
+
+    wb = xlwt.Workbook(encoding='ansi') #encoding은 ansi로 해준다.
+    ws = wb.add_sheet('order') #시트 추가
+    
+    row_num = 0
+    col_names = ['영문', '주문일','주문ID','주문자','위탁자','브랜드','상품명','색상','수량','중도매','도매가','비고','공급가','이름','전화번호','주소','ID','나온날짜']
+    
+    #열이름을 첫번째 행에 추가 시켜준다.
+    for idx, col_name in enumerate(col_names):
+        ws.write(row_num, idx, col_name)
+
+
+    id_list2 = request.POST.getlist('selected[]')
+
+
+    
+    
+    for d_id in id_list2:
+        rows = OrderT.objects.filter(order_t_id=d_id).values_list('영문', '주문날짜','주문자id','주문자','위탁자','브랜드','상품명','색상','수량','중도매','도매가','비고','공급가','이름','전화번호','주소','아이디','나온날짜')
+        
+
+        for row in rows:
+            row_num +=1
+            for col_num, attr in enumerate(row):
+                ws.write(row_num, col_num, attr)
+    wb.save(response)
+    return response
+
+
+
+## 페이징안된 전체 검색리스트 다운로드
+def order_excel2(request):
+	
+    response = HttpResponse(content_type="application/vnd.ms-excel")
+    response["Content-Disposition"] = 'attachment;filename*=UTF-8\'\'all_download.xls'
+
+
+    wb = xlwt.Workbook(encoding='ansi') #encoding은 ansi로 해준다.
+    ws = wb.add_sheet('주문장') #시트 추가
+    
+    row_num = 0
+    col_names = ['영문', '주문일','주문ID','주문자','위탁자','브랜드','상품명','색상','수량','중도매','도매가','비고','공급가','이름','전화번호','주소','ID','나온날짜']
+    
+    #열이름을 첫번째 행에 추가 시켜준다.
+    for idx, col_name in enumerate(col_names):
+        ws.write(row_num, idx, col_name)
+
+
+    id_list2 = request.POST.getlist('orderlist[]')
+
+    
+    
+    for d_id in id_list2:
+        rows = OrderT.objects.filter(order_t_id=d_id).values_list('영문', '주문날짜','주문자id','주문자','위탁자','브랜드','상품명','색상','수량','중도매','도매가','비고','공급가','이름','전화번호','주소','아이디','나온날짜')
+        
+
+        for row in rows:
+            row_num +=1
+            for col_num, attr in enumerate(row):
+                ws.write(row_num, col_num, attr)
+    wb.save(response)
+    return response
+
+
+def order_all_delete(request):
+    order_list = OrderT.objects.all()
+    order_list.delete()
+    messages.info(request, '모든 데이터가 삭제되었습니다.')
+    return redirect('jumun:order')
+
+
+    
     

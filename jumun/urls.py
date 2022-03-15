@@ -14,7 +14,13 @@ urlpatterns = [
     path('excel2/', views.jumun_excel2, name='jumun_excel2'),
 ##    path('upload/', views.uploadFile, name="uploadFile"),
     path('excelupload2/', views.excel_upload, name="excel_upload"),
-    path('alldelete/', views.all_delete, name="alldelete"), 
+    path('alldelete/', views.all_delete, name="alldelete"),
+    path('order/', views.order_list, name="order"),
+    path('order/delete/', views.order_delete, name="order_delete"),
+    path('order/excel/', views.order_excel, name="order_excel"),
+    path('order/excel2/', views.order_excel2, name="order_excel2"),
+    path('order/alldelete/', views.order_all_delete, name="order_alldelete"),
+    path('order_submit/', views.order_submit, name="order_submit"),
 
 ]
 
