@@ -121,6 +121,33 @@ def jumun_delete(request):
     return redirect('jumun:index')
 
 
+## 테이블수정 "이름" 컬럼 test중 6월 23
+@csrf_exempt
+def jumun_td_update(request):
+
+    data =json.loads(request.body)
+    t_gubun =data.get('gubun', None)
+    if t_gubun == "e_brand" :
+        t_id = data.get('t_id', None)
+        t_brand = data.get('t_brand', None)
+        JumunT.objects.filter(jumun_t_id=t_id).update(브랜드=t_brand)
+    elif t_gubun == "e_quantity":
+        t_id = data.get('t_id', None)
+        t_quantity = data.get('t_quantity', None)
+        JumunT.objects.filter(jumun_t_id=t_id).update(수량=t_quantity)
+    elif t_gubun == "e_memo":
+        t_id = data.get('t_id', None)
+        t_memo = data.get('t_memo', None)
+        JumunT.objects.filter(jumun_t_id=t_id).update(비고=t_memo)
+    elif t_gubun == "e_phone":
+        t_id = data.get('t_id', None)
+        t_phone = data.get('t_phone', None)
+        JumunT.objects.filter(jumun_t_id=t_id).update(전화번호=t_phone)
+        
+    return redirect('jumun:index')
+    ##return Response()
+
+
 ## 페이징안된 전체 검색리스트 다운로드
 def jumun_excel2(request):
 	

@@ -199,3 +199,75 @@ $('.btn-example').click(function(){
         });
 
     }
+
+// Editable 수정가능테이블
+//더블클릭시 수정가능하게 변경
+ $(document).ready(function() {
+        $(document).on("dblclick", ".editable", function() {
+            var value=$(this).text();
+			var value2=$(this).attr("id");
+			var td=$(this).parent("td");	
+            var input="<input type='text' class='input-data' value='"+value+"'  class='form-control' >"; 
+			$(this).html(input);
+            $(this).removeClass("editable")
+        });
+//해당 td가 포커스를 잃었을때 원래 value로
+//value2 는 jumun_t_id
+        $(document).on("blur", ".input-data", function() {
+            var value=$(this).val();
+			var td=$(this).parent("td");
+		    $(this).remove();
+            td.html(value);
+            td.addClass("editable")
+            });
+
+			//13=enter 눌렀을때 변경된값을 가지고 td로 돌아감
+        $(document).on("keypress", ".input-data", function(e) {
+            var key=e.which;
+            if(key==13) {
+                var value=$(this).val();
+                var td=$(this).parent("td");
+				var value2=td.attr("id");
+				var value3 =td.attr("name");
+
+				if(value3 == "e_brand"){
+				var jsonData = { "t_id" : value2, "t_brand": value.trim(), "gubun": value3};
+				}
+				else if(value3 == "e_quantity"){
+				var jsonData = {"t_id": value2, "t_quantity": value.trim(), "gubun": value3};
+				}
+				else if(value3 == "e_memo"){
+				var jsonData = {"t_id": value2, "t_memo": value.trim(), "gubun": value3};
+				}
+				else if(value3 == "e_phone"){
+				var jsonData = {"t_id": value2, "t_phone": value.trim(), "gubun": value3};
+				}
+                //$(this).remove();
+                td.html(value.trim());
+                td.addClass("editable");
+				
+
+			jQuery.ajax({
+				type:"post",
+				url: edit_tp,
+				//data:{"t_id": value2, "t_name": value},
+				data: JSON.stringify(jsonData),
+				dataType: 'json',
+				contentType: "application/json; charset=utf-8",
+				headers:{"X-CSRFTOKEN": '{{csrftoken}}'}
+
+			}).done(function(data){
+					//$(".editable").html(response);
+					alert("성공");
+				}).fail(function(data) {
+               		alert("변경되었습니다..");
+					//console.log("error",e);
+					//console.log("status", status);
+				})
+					
+			}//if 끝
+				
+        });
+       
+
+   });

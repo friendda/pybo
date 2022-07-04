@@ -1,11 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.db.models import Q, Count
-from ..models import Question, Answer, Comment
+from ..models import Question, Answer, Comment, QuestionCount
 from ..forms import QuestionForm, AnswerForm, CommentForm
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from datetime import date, datetime, timedelta
+
 
 # Create your views here.
 
@@ -47,7 +49,38 @@ def index(request):
 def detail(request, question_id):
     """
     pybo 내용 출력
+
     """
     question = get_object_or_404(Question, pk=question_id)
+   
     context = {'question': question}
-    return render(request, 'pybo/question_detail.html', context)
+    
+    response= render(request, 'pybo/question_detail.html', context)
+
+    # 조회수 기능(쿠키이용)
+    expire_date, now = datetime.now(), datetime.now()
+    expire_date += timedelta(days=1)
+    expire_date = expire_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    expire_date -=now
+    max_age = expire_date.total_seconds()
+
+    cookie_value = request.COOKIES.get('hitboard','_')
+
+    if f'_{question_id}_' not in  cookie_value:
+        cookie_value += f'{question_id}_'
+        response.set_cookie('hitboard', value=cookie_value, max_age=max_age,  httponly=True)
+        question.view_count +=1
+        question.save()
+    return response
+
+#ip 체크 함
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[-1].strip()
+    
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+

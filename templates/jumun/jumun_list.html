@@ -88,7 +88,7 @@
             <th>주문날짜</th>
 			<th>주문id</th>
 			<th>주문자</th>
-			<th>위탁자</th>
+			<th >위탁자</th>
 			<th>브랜드</th>
 			<th>상품명</th>
 			<th >색상</th>
@@ -135,10 +135,10 @@
 			<td>
 					{{ jumun.주문자}}
 			</td>
-			<td>
+			<td >
 					{{ jumun.위탁자}}
 			</td>
-			<td>
+			<td class="editable tcolor"  id="{{jumun.jumun_t_id}}" name="e_brand">
                   {{ jumun.브랜드}}
 		   </td>
 		   <td style="font-size: 11px">
@@ -147,7 +147,7 @@
 		   <td >
                    {{ jumun.색상}}
 		   </td>
-		   <td>
+		   <td class="editable"  id="{{jumun.jumun_t_id}}" name="e_quantity">
                    {{ jumun.수량}}
 		   </td>
 		   <td>
@@ -156,14 +156,16 @@
 		   <td>
                    {{ jumun.도매가}}
 		   </td>
-		   <td style="font-size: 11px">{{jumun.비고}}</td>
+		   <td class="editable"  id="{{jumun.jumun_t_id}}" name="e_memo" style="font-size: 11px ">
+		           {{jumun.비고}}
+		   </td>
 		   <td>
                    {{ jumun.공급가}}
 		   </td>
-		   <td>
-                   {{ jumun.이름}}
+		   <td >
+		           {{ jumun.이름}} 
 		   </td>
-		   <td>
+		   <td class="editable"  id="{{jumun.jumun_t_id}}" name="e_phone">
                    {{ jumun.전화번호}}
 		   </td>
 		   <td style="font-size: 10px">
@@ -324,8 +326,8 @@
 <!-- modal end -->
 
 
-{% endblock %}
 
+{% endblock %}
 
 
 
@@ -338,6 +340,25 @@
 const delpage ="{% url 'jumun:jumun_delete' %}";
 const orderpage="{% url 'jumun:order_submit' %}";
 const uppage="{% url 'jumun:order_submit' %}";
+const edit_tp ="{%url 'jumun:jumun_td_update'%}" //수정가능테이블
+
+//조건에 따른 row 색상 변경
+$('tr').each(function(){
+if($(this).children('.tcolor').text().trim() == '푸아송'){
+    $(this).css('background-color','#5F9EA0')
+    }
+	else if($(this).children('.tcolor').text().trim() == '데일리베베'){
+	$(this).css('background-color','#00FFFF')
+	}
+	else{
+    $(this).css('background-color','#FFE4C4')
+    }
+	});
+
+
+
+
+
 </script>
 
 <script src="{% static 'index.js' %}"></script>

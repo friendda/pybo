@@ -53,7 +53,7 @@ a.btn-layerClose:hover {
   color: #fff;
 }</style>
 
-<nav id="sidebar" class="border-top border-light col-sm p-4" style="font-size: 12px;">
+<nav id="sidebar" class="border-top border-light col-sm p-4" style="font-size: 11px;">
     <div class="list-group">
         <!--<a class="rounded-0 list-group-item list-group-item-action list-group-item-light " href="/pybo">공지사항</a>  -->
 
@@ -87,10 +87,9 @@ a.btn-layerClose:hover {
         <!--
         <a class="rounded-0 list-group-item list-group-item-action list-group-item-light " href="/pybo/question/list/tip/">팁과강좌</a>
         <a class="rounded-0 list-group-item list-group-item-action list-group-item-light " href="/pybo/question/list/quiz/">파이썬퀴즈</a>
-        <a class="rounded-0 list-group-item list-group-item-action list-group-item-light " href="/pybo/question/list/news/">새로운소식</a>
-        <a class="rounded-0 list-group-item list-group-item-action list-group-item-light " href="/pybo/question/list/job/">구인구직</a>
         -->
-        <a class="rounded-0 list-group-item list-group-item-action list-group-item-light " href="/pybo/question/list/bug/"><i class="fa-brands fa-apple"> Test 중</i></a>
+        <a class="rounded-0 list-group-item list-group-item-action list-group-item-light "  href="{% url 'jumun:index' %}"><i class="fa-brands fa-apple"></i> 주문장</a>
+		<a class="rounded-0 list-group-item list-group-item-action list-group-item-light "  href="/jumun/order"> <i class="fa-solid fa-box-archive"></i> Order</a>
     </div>
 </nav>
 

@@ -12,6 +12,7 @@ urlpatterns = [
     path('delete/', views.jumun_delete, name='jumun_delete'),
     path('excel/', views.jumun_excel, name='jumun_excel'),
     path('excel2/', views.jumun_excel2, name='jumun_excel2'),
+    path('tdupdate/', views.jumun_td_update, name='jumun_td_update'),
 ##    path('upload/', views.uploadFile, name="uploadFile"),
     path('excelupload2/', views.excel_upload, name="excel_upload"),
     path('alldelete/', views.all_delete, name="alldelete"),

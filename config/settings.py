@@ -31,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = '*'
 
 #get/post 한번에 보낼수 있는개수 셋팅(default 3000)
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 30000
